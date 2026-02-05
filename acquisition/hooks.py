@@ -1,3 +1,10 @@
+app_name = "acquisition"
+app_title = "Acquisition"
+app_publisher = "SurgiShop"
+app_description = "Control Acquisition Role Access"
+app_email = "gary.starr@surgishop.com"
+app_license = "MIT"
+
 # path: your_custom_app/your_custom_app/hooks.py
 
 # 1. Filters the list view
