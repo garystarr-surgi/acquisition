@@ -5,21 +5,36 @@ app_description = "Control Acquisition Role Access"
 app_email = "gary.starr@surgishop.com"
 app_license = "MIT"
 
-# path: your_custom_app/your_custom_app/hooks.py
 
-# 1. Filters the list view
+# ─────────────────────────────
+# Permissions
+# ─────────────────────────────
+
 permission_query_conditions = {
     "Purchase Order": "acquisition.permissions.po_permission_query"
 }
 
-# 2. Controls direct access/API access
 has_permission = {
     "Purchase Order": "acquisition.permissions.has_po_permission"
 }
 
-# 3. Runs the automation when creating the record
+
+# ─────────────────────────────
+# Document Events
+# ─────────────────────────────
+
 doc_events = {
     "Purchase Order": {
-        "before_insert": "acquisition.permissions.auto_check_acquisition"
+        "before_insert": "acquisition.permissions.auto_check_acquisition",
+        "validate": "acquisition.permissions.prevent_price_edit"
     }
+}
+
+
+# ─────────────────────────────
+# Client-side UI logic
+# ─────────────────────────────
+
+doctype_js = {
+    "Purchase Order": "public/js/purchase_order.js"
 }
