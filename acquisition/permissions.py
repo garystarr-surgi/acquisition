@@ -1,42 +1,68 @@
-# path: acquisition/acquisition/permissions.py
 import frappe
 
+
 def po_permission_query(user=None):
+    """
+    Filters Purchase Order list, reports, searches.
+    Acquisitions only see acquisition POs.
+    """
     if not user:
         user = frappe.session.user
 
-    # Safety: check if column exists
     if not frappe.db.has_column("Purchase Order", "custom_acquisition"):
         return ""
 
     roles = frappe.get_roles(user)
 
     if "Acquisitions" in roles and "System Manager" not in roles:
-        return "(`tabPurchase Order`.custom_acquisition = 1)"
+        return "`tabPurchase Order`.custom_acquisition = 1"
 
     return ""
 
+
 def has_po_permission(doc, ptype=None, user=None):
     """
-    V16 BREAKING CHANGE FIX: 
-    Must return True explicitly if permission is allowed.
+    Controls direct access (URL, API, background jobs).
+    REQUIRED explicit True in v16.
     """
     if not user:
         user = frappe.session.user
-        
+
     roles = frappe.get_roles(user)
-    
+
     if "Acquisitions" in roles and "System Manager" not in roles:
-        is_acq = doc.get("custom_acquisition")
-        if not is_acq:
-            return False # Deny access
-            
-    # IMPORTANT: v16 requires an explicit True to allow the document to load
+        if not doc.get("custom_acquisition"):
+            return False
+
     return True
 
+
 def auto_check_acquisition(doc, method=None):
-    items = doc.get("items") or []
-    for item in items:
-        if item.get("supplier_quotation"):
-            doc.custom_acquisition = 1
-            break
+    """
+    Automatically mark PO as acquisition
+    when created by Acquisition role.
+    """
+    user = frappe.session.user
+    roles = frappe.get_roles(user)
+
+    if "Acquisitions" in roles and "System Manager" not in roles:
+        doc.custom_acquisition = 1
+
+
+def prevent_price_edit(doc, method=None):
+    """
+    Server-side protection.
+    Acquisition users cannot change pricing.
+    """
+    user = frappe.session.user
+    roles = frappe.get_roles(user)
+
+    if "Acquisitions" not in roles or "System Manager" in roles:
+        return
+
+    for item in doc.items:
+        db_rate = item.get_db_value("rate")
+        if db_rate is not None and item.rate != db_rate:
+            frappe.throw(
+                "Acquisitions are not allowed to modify item pricing."
+            )
