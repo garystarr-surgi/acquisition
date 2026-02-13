@@ -40,3 +40,24 @@ def auto_set_acquisition(doc, method=None):
     """
     if is_acquisition():
         doc.custom_acquisition = 1
+
+
+# Add these to the bottom of your permissions.py
+
+def po_permission_query(user):
+    return get_acquisition_condition("Purchase Order", user)
+
+def pr_permission_query(user):
+    return get_acquisition_condition("Purchase Receipt", user)
+
+def has_po_permission(doc, user):
+    return check_acquisition_permission(doc, user)
+
+def has_pr_permission(doc, user):
+    return check_acquisition_permission(doc, user)
+
+def auto_check_acquisition(doc, method=None):
+    auto_set_acquisition(doc, method)
+
+def auto_check_pr_acquisition(doc, method=None):
+    auto_set_acquisition(doc, method)
