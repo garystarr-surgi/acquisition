@@ -6,27 +6,25 @@ app_email = "gary.starr@surgishop.com"
 app_license = "MIT"
 
 
-# ─────────────────────────────
-# Permissions
-# ─────────────────────────────
-
+# Permission query hooks
 permission_query_conditions = {
-    "Purchase Order": "acquisition.permissions.po_permission_query"
+    "Purchase Order": "my_app.permissions.po_permission_query",
+    "Purchase Receipt": "my_app.permissions.pr_permission_query"
 }
 
+# Permission check hooks
 has_permission = {
-    "Purchase Order": "acquisition.permissions.has_po_permission"
+    "Purchase Order": "my_app.permissions.has_po_permission",
+    "Purchase Receipt": "my_app.permissions.has_pr_permission"
 }
 
-
-# ─────────────────────────────
-# Document Events
-# ─────────────────────────────
-
+# Doc events
 doc_events = {
     "Purchase Order": {
-        "before_insert": "acquisition.permissions.auto_check_acquisition",
-        "validate": "acquisition.permissions.prevent_price_edit"
+        "before_insert": "my_app.permissions.auto_check_acquisition",
+    },
+    "Purchase Receipt": {
+        "before_insert": "my_app.permissions.auto_check_pr_acquisition",
     }
 }
 
