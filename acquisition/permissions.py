@@ -36,6 +36,45 @@ def has_po_permission(doc, ptype=None, user=None):
 
     return True
 
+def has_pr_permission(doc, ptype=None, user=None):
+    """
+    Controls direct access (URL, API, background jobs).
+    """
+    if not user:
+        user = frappe.session.user
+
+    roles = frappe.get_roles(user)
+
+    if "Acquisitions" in roles and "System Manager" not in roles:
+        if not doc.get("custom_acquisition"):
+            return False
+
+    return True
+
+
+
+
+
+def pr_permission_query(user=None):
+    """
+    Filters Purchase Receipt list, reports, searches.
+    Acquisitions only see acquisition PRs.
+    """
+    if not user:
+        user = frappe.session.user
+
+    if not frappe.db.has_column("Purchase Receipt", "custom_acquisition"):
+        return ""
+
+    roles = frappe.get_roles(user)
+
+    if "Acquisitions" in roles and "System Manager" not in roles:
+        return "`tabPurchase Receipt`.custom_acquisition = 1"
+
+    return ""
+
+
+
 
 def auto_check_acquisition(doc, method=None):
     """
