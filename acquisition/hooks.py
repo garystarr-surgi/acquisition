@@ -8,23 +8,23 @@ app_license = "MIT"
 
 # Permission query hooks
 permission_query_conditions = {
-    "Purchase Order": "my_app.permissions.po_permission_query",
-    "Purchase Receipt": "my_app.permissions.pr_permission_query"
+    "Purchase Order": "acquisition.permissions.po_permission_query",
+    "Purchase Receipt": "acquisition.permissions.pr_permission_query"
 }
 
 # Permission check hooks
 has_permission = {
-    "Purchase Order": "my_app.permissions.has_po_permission",
-    "Purchase Receipt": "my_app.permissions.has_pr_permission"
+    "Purchase Order": "acquisition.permissions.has_po_permission",
+    "Purchase Receipt": "acquisition.permissions.has_pr_permission"
 }
 
 # Doc events
 doc_events = {
     "Purchase Order": {
-        "before_insert": "my_app.permissions.auto_check_acquisition",
+        "before_insert": "acquisition.permissions.auto_check_acquisition",
     },
     "Purchase Receipt": {
-        "before_insert": "my_app.permissions.auto_check_pr_acquisition",
+        "before_insert": "acquisition.permissions.auto_check_pr_acquisition",
     }
 }
 
